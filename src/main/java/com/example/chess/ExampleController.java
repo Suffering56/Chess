@@ -14,6 +14,6 @@ public class ExampleController {
 
     @GetMapping(path = "/version")
     public ResponseEntity<String> getVersion() {
-        return ResponseEntity.ok("v.0.0.1");
+        return ResponseEntity.ok("v.0.0.12");
     }
 }
