@@ -20,13 +20,13 @@ public class WelcomeController {
     @RequestMapping("/")
     public String welcome(Map<String, Object> model) {
         model.put("message", this.message);
-        model.put("index", 8);
-        return "welcome";
+        model.put("count", 8);
+        return "index";
     }
 
-    @RequestMapping("/other/{index}")
-    public String other(@PathVariable("index") int pathIndex, Map<String, Object> model) {
-        model.put("index", pathIndex);
+    @RequestMapping("/other/{count}")
+    public String other(@PathVariable("count") int count, Map<String, Object> model) {
+        model.put("count", count);
         return "other";
     }
 }
