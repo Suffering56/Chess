@@ -1,7 +1,26 @@
-h1{
-  color:#0000FF;
+.board {
+  width: 640px;
+  height: 640px;
+  display: inline-block;
+  overflow: hidden;
+  background: url('board.png') center no-repeat;
+  background-size: 640px;
 }
 
-h2{
-  color:#FF0000;
+.board_row {
+  height: 80px;
+  width: 640px;
+}
+
+.board_cell {
+  width: 80px;
+  height: 80px;
+  display: inline-block;
+  /*margin-right: -20px;*/
+  overflow: hidden;
+  /*background-color: green;*/
+}
+
+.pawn {
+  background: url('sprite_80.png') -5px -5px no-repeat;
 }

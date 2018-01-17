@@ -1,0 +1,10 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="board">
+    <div class="board">
+        <div class="board_row" ng-repeat="row in rows">
+            <div class="board_cell" ng-class="getCellClass(row,column)" ng-repeat="column in columns"></div>
+        </div>
+    </div>
+</div>
+</html>
