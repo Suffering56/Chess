@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Valery Peschanyy <p.v.s.oren@gmail.com> on 10.01.2018.
  */
 @Controller
-public class WelcomeController {
+public class NavigationController {
 
     // inject via application.properties
     @Value("${welcome.message:test}")
