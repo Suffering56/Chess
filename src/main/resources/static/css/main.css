@@ -22,18 +22,18 @@
   background-color: #b58863;
 }
 
-.chessboard-cell.available {
-  border: 1px solid transparent;
-  box-shadow: inset 0 0 2px 2px green;
-}
-
 .chessboard-cell.inner {
-
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  border: 1px solid transparent;
 }
 
 .chessboard-cell.inner.selected {
-  /*border: 1px solid transparent;*/
   background-color: rgba(0, 128, 0, 0.3);
+}
+
+.chessboard-cell.inner.available {
+  box-shadow: inset 0 0 2px 2px green;
 }
 
 .rook-white {

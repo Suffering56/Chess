@@ -1,4 +1,4 @@
-package com.example.chess.rest;
+package com.example.chess.web;
 
 import com.example.chess.App;
 import org.springframework.http.ResponseEntity;

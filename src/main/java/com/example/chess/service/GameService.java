@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Valery Peschanyy <p.v.s.oren@gmail.com> on 19.01.2018.
  */
-public interface PieceService {
+public interface GameService {
 
     List<List<CellParamsDTO>> getStartArrangement();
 }

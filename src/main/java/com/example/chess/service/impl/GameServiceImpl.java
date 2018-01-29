@@ -1,7 +1,7 @@
 package com.example.chess.service.impl;
 
 import com.example.chess.dto.CellParamsDTO;
-import com.example.chess.service.PieceService;
+import com.example.chess.service.GameService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  * Created by Valery Peschanyy <p.v.s.oren@gmail.com> on 19.01.2018.
  */
 @Service
-public class PieceServiceImpl implements PieceService {
+public class GameServiceImpl implements GameService {
 
 
     @Override

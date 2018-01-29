@@ -1,7 +1,8 @@
-package com.example.chess.rest;
+package com.example.chess.web;
 
 import com.example.chess.dto.CellParamsDTO;
-import com.example.chess.service.PieceService;
+import com.example.chess.service.GameService;
+import com.example.chess.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,25 +11,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Valery Peschanyy <p.v.s.oren@gmail.com> on 09.01.2018.
  */
 @RestController
-@RequestMapping("/api/piece")
-public class PieceController {
+@RequestMapping("/api/game")
+public class GameController {
 
-    private final PieceService pieceService;
+    private final GameService gameService;
 
     @Autowired
-    public PieceController(PieceService pieceService) {
-        this.pieceService = pieceService;
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
     }
 
-    @GetMapping("/arrangement/start")
+    @GetMapping("/start")
     public ResponseEntity<List<List<CellParamsDTO>>> getStartArrangement() {
-        List<List<CellParamsDTO>> result = pieceService.getStartArrangement();
+        List<List<CellParamsDTO>> result = gameService.getStartArrangement();
 
         return ResponseEntity.ok(result);
     }
@@ -36,7 +36,7 @@ public class PieceController {
     @GetMapping("/moves/{selectedRow}/{selectedColumn}")
     public ResponseEntity<List<List<CellParamsDTO>>> getAvailableMoves(@PathVariable("selectedRow") Integer selectedRow,
                                                                        @PathVariable("selectedColumn") Integer selectedColumn) {
-        List<List<CellParamsDTO>> result = pieceService.getStartArrangement();
+        List<List<CellParamsDTO>> result = gameService.getStartArrangement();
 
         result.get(rnd()).get(rnd()).available = true;
         result.get(rnd()).get(rnd()).available = true;
@@ -47,10 +47,6 @@ public class PieceController {
     }
 
     private static int rnd() {
-        return randInt(0, 7);
-    }
-
-    private static int randInt(int min, int max) {
-        return new Random().nextInt((max - min) + 1) + min;
+        return Utils.randInt(0, 7);
     }
 }

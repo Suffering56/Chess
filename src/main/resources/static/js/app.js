@@ -7,7 +7,7 @@ app.controller('common', function ($scope, $http) {
 
   $http({
     method: 'GET',
-    url: '/api/piece/arrangement/start'
+    url: '/api/game/start'
   }).then(function (response) {
     $scope.piecesMatrix = response.data;
     $scope.showPieces = true;
@@ -28,26 +28,18 @@ app.controller('common', function ($scope, $http) {
   function update(rowIndex, columnIndex) {
     $http({
       method: 'GET',
-      url: '/api/piece/moves/' + rowIndex + '/' + columnIndex
+      url: '/api/game/moves/' + rowIndex + '/' + columnIndex
     }).then(function (response) {
       $scope.piecesMatrix = response.data;
     });
   }
 
   $scope.getCellClass = function (cell, rowIndex, columnIndex) {
-    var result = ['', ''];
-
     if ((rowIndex + columnIndex) % 2 == 0) {
-      result[0] = 'white';
+      return 'white';
     } else {
-      result[0] = 'black';
+      return 'black';
     }
-
-    if (cell.available == true) {
-      result[1] = 'available';
-    }
-
-    return result;
   };
 
   $scope.getInnerCellClass = function (cell) {
@@ -60,6 +52,8 @@ app.controller('common', function ($scope, $http) {
 
       if (cell.selected == true) {
         result[1] = 'selected';
+      } else if (cell.available == true) {
+        result[1] = 'available';
       }
     }
 
