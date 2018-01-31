@@ -22,4 +22,10 @@ public class NavigationController {
     public String game(@PathVariable("gameId") String gameId, Map<String, Object> model) {
         return "index";
     }
+
+    @RequestMapping("/game/{gameId}/move/{moveIndex}")
+    public String gameAndMove(@PathVariable("gameId") String gameId, Map<String, Object> model,
+                              @PathVariable("moveIndex") String moveIndex) {
+        return "index";
+    }
 }
