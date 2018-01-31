@@ -27,7 +27,9 @@ public class GameController {
     }
 
     @GetMapping("/start")
-    public ResponseEntity<List<List<CellParamsDTO>>> getStartArrangement() {
+    public ResponseEntity<List<List<CellParamsDTO>>> getStartArrangement(
+//            @PathVariable("gameId") Long gameId
+    ) {
         List<List<CellParamsDTO>> result = gameService.getStartArrangement();
 
         return ResponseEntity.ok(result);
@@ -47,6 +49,6 @@ public class GameController {
     }
 
     private static int rnd() {
-        return Utils.randInt(0, 7);
+        return Utils.generateRandomInt(0, 7);
     }
 }

@@ -1,8 +1,23 @@
 var app = angular.module('app', []);
 
-app.controller('common', function ($scope, $http) {
+app.config(['$locationProvider', function ($locationProvider) {
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
+}]);
+
+app.controller('common', function ($scope, $http, $location) {
+
+  console.log('init path', $location.path());
+  console.log('init path.length', $location.path().split("/").length);
+
+  //if gameId == null then {game is new -> create new game} else {get latest move}
 
   $scope.showPieces = false;
+  $scope.params = {
+    gameId: null
+  };
   var previousSelectedCell;
 
   $http({
@@ -13,7 +28,17 @@ app.controller('common', function ($scope, $http) {
     $scope.showPieces = true;
   });
 
+  var counter = 0;
+
   $scope.doClick = function (cell, rowIndex, columnIndex) {
+    $location.path('/game/' + counter, true);
+    counter++;
+    var length = $location.path().split("/").length;
+    var gameId = $location.path().split("/")[2];
+    console.log('path', $location.path());
+    console.log('length',length);
+    console.log('gameId', gameId);
+
     if (cell) {
       if (previousSelectedCell) {
         previousSelectedCell.selected = false;

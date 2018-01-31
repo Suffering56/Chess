@@ -1,6 +1,5 @@
 package com.example.chess.web;
 
-import com.example.chess.util.Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +14,12 @@ public class NavigationController {
 
     @RequestMapping("/")
     public String redirect() {
-        return "redirect:/game/" + Utils.randInt(1,100);
+//        return "redirect:/game/" + Utils.generateRandomInt(1,100);
+        return "index";
     }
 
     @RequestMapping("/game/{gameId}")
     public String game(@PathVariable("gameId") String gameId, Map<String, Object> model) {
-        model.put("gameId", gameId);
-        return "game";
+        return "index";
     }
 }
