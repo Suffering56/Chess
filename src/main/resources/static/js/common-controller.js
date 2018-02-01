@@ -1,4 +1,6 @@
 app.controller("common", function ($scope, $http, initService) {
+    $scope.horizontalLabels = ["h", "g", "f", "e", "d", "c", "b", "a"];
+    $scope.verticalLabels = ["1", "2", "3", "4", "5", "6", "7", "8"];
     $scope.player = {
         isWhite: true
     };
@@ -48,16 +50,17 @@ app.controller("common", function ($scope, $http, initService) {
     };
 
     $scope.getInnerCellClass = function (cell) {
-        var result = ["", ""];
+        var result = [];
 
         if (cell.piece) {
-            result[0] = cell.piece + "-" + cell.side;
+            result.push('piece');
+            result.push(cell.piece + "-" + cell.side);
         }
 
         if (cell.selected == true) {
-            result[1] = "selected";
+            result.push('selected');
         } else if (cell.available == true) {
-            result[1] = "available";
+            result.push('available');
         }
 
         return result;
