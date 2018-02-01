@@ -1,10 +1,10 @@
 package com.example.chess.web;
 
+import com.example.chess.util.NavigationException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Map;
 
 /**
  * Created by Valery Peschanyy <p.v.s.oren@gmail.com> on 10.01.2018.
@@ -12,20 +12,21 @@ import java.util.Map;
 @Controller
 public class NavigationController {
 
-    @RequestMapping("/")
-    public String redirect() {
-//        return "redirect:/game/" + Utils.generateRandomInt(1,100);
-        return "index";
-    }
+    private static final String VIEW = "index";
 
-    @RequestMapping("/game/{gameId}")
-    public String game(@PathVariable("gameId") String gameId, Map<String, Object> model) {
-        return "index";
-    }
-
-    @RequestMapping("/game/{gameId}/move/{moveIndex}")
-    public String gameAndMove(@PathVariable("gameId") String gameId, Map<String, Object> model,
-                              @PathVariable("moveIndex") String moveIndex) {
-        return "index";
+    @RequestMapping({
+            "/",
+            "/game/{gameId}",
+            "/game/{gameId}/move/{moveId}"
+    })
+    public String redirect(@PathVariable(value = "gameId", required = false) String gameId,
+                           @PathVariable(value = "moveId", required = false) String moveId) throws NavigationException {
+        if (gameId != null && !StringUtils.isNumeric(gameId)) {
+            throw new NavigationException("<gameId> must be a number");
+        }
+        if (moveId != null && !StringUtils.isNumeric(moveId)) {
+            throw new NavigationException("<moveId> must be a number");
+        }
+        return VIEW;
     }
 }
