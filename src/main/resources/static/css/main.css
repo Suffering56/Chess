@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .chessboard {
   display: inline-block;
   overflow: hidden;
@@ -23,8 +27,8 @@
 }
 
 .chessboard-cell.inner {
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
+  /*width: calc(100% - 2px);*/
+  /*height: calc(100% - 2px);*/
   border: 1px solid transparent;
 }
 

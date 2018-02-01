@@ -7,3 +7,12 @@ app.config(["$locationProvider", function ($locationProvider) {
     });
 }]);
 
+app.filter('chessboardReverse', function() {
+    return function(items, isWhite) {
+        if (isWhite) {
+            return items.slice().reverse();
+        } else {
+            return items;
+        }
+    };
+});

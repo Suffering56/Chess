@@ -15,17 +15,17 @@ import java.util.List;
 @Service
 public class GameServiceImpl implements GameService {
 
-
-
     @Override
     public List<List<CellDTO>> getStartArrangement() {
         List<List<CellDTO>> rows = new ArrayList<>();
 
-        for (int rowIndex = 7; rowIndex >= 0; rowIndex--) {
+        //1-8
+        for (int rowIndex = 0; rowIndex < 8; rowIndex++) {
             List<CellDTO> cells = new ArrayList<>();
 
+            //A-H
             for (int columnIndex = 0; columnIndex < 8; columnIndex++) {
-                CellDTO cell = new CellDTO();
+                CellDTO cell = new CellDTO(rowIndex, columnIndex);
 
                 if (rowIndex == 0 || rowIndex == 1) {
                     cell.setSide(Side.white);
@@ -43,9 +43,9 @@ public class GameServiceImpl implements GameService {
                     } else if (columnIndex == 2 || columnIndex == 5) {
                         cell.setPiece(PieceType.bishop);
                     } else if (columnIndex == 3) {
-                        cell.setPiece(PieceType.queen);
-                    } else {  //columnIndex == 4
                         cell.setPiece(PieceType.king);
+                    } else {  //columnIndex == 4
+                        cell.setPiece(PieceType.queen);
                     }
                 }
 

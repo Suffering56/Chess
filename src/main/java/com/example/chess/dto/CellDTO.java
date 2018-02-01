@@ -16,4 +16,11 @@ public class CellDTO {
     private PieceType piece;
     private boolean available;
     private boolean selected;
+    private Integer rowIndex;
+    private Integer columnIndex;
+
+    public CellDTO(Integer rowIndex, Integer columnIndex) {
+        this.rowIndex = rowIndex;
+        this.columnIndex = columnIndex;
+    }
 }
