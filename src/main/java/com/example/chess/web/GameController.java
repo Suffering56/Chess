@@ -1,14 +1,14 @@
 package com.example.chess.web;
 
-import com.example.chess.dto.CellParamsDTO;
+import com.example.chess.dto.CellDTO;
+import com.example.chess.dto.GameDTO;
+import com.example.chess.dto.MoveInputDTO;
+import com.example.chess.entity.Game;
+import com.example.chess.repository.GameRepository;
 import com.example.chess.service.GameService;
 import com.example.chess.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,35 +20,49 @@ import java.util.List;
 public class GameController {
 
     private final GameService gameService;
+    private final GameRepository gameRepository;
 
     @Autowired
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, GameRepository gameRepository) {
         this.gameService = gameService;
+        this.gameRepository = gameRepository;
     }
 
     @GetMapping("/start")
-    public ResponseEntity<List<List<CellParamsDTO>>> getStartArrangement(
-//            @PathVariable("gameId") Long gameId
-    ) {
-        List<List<CellParamsDTO>> result = gameService.getStartArrangement();
-
-        return ResponseEntity.ok(result);
+    public Game startGame() {
+        return gameRepository.save(new Game());
     }
 
-    @GetMapping("/moves/{selectedRow}/{selectedColumn}")
-    public ResponseEntity<List<List<CellParamsDTO>>> getAvailableMoves(@PathVariable("selectedRow") Integer selectedRow,
-                                                                       @PathVariable("selectedColumn") Integer selectedColumn) {
-        List<List<CellParamsDTO>> result = gameService.getStartArrangement();
+    @GetMapping("/{gameId}/start")
+    public GameDTO getStartArrangement(@PathVariable("gameId") long gameId) {
+        List<List<CellDTO>> cells = gameService.getStartArrangement();
 
-        result.get(rnd()).get(rnd()).available = true;
-        result.get(rnd()).get(rnd()).available = true;
-        result.get(rnd()).get(rnd()).available = true;
-        result.get(selectedRow).get(selectedColumn).selected = true;
+        GameDTO result = new GameDTO();
+        result.setCells(cells);
+        result.setGameId(gameId);
 
-        return ResponseEntity.ok(result);
+        return result;
+    }
+
+    @PostMapping("/{gameId}/move")
+    public GameDTO getAvailableMoves(@PathVariable("gameId") Long gameId,
+                                     @RequestBody MoveInputDTO dto) {
+//        Game game = gameRepository.findOne(gameId);
+        List<List<CellDTO>> cells = gameService.getStartArrangement();
+
+        cells.get(3).get(3).setAvailable(true);
+        cells.get(4).get(3).setAvailable(true);
+        cells.get(rnd()).get(rnd()).setAvailable(true);
+        cells.get(dto.getSelectedRow()).get(dto.getSelectedColumn()).setSelected(true);
+
+        GameDTO result = new GameDTO();
+        result.setGameId(gameId);
+        result.setCells(cells);
+
+        return result;
     }
 
     private static int rnd() {
-        return Utils.generateRandomInt(0, 7);
+        return Utils.generateRandomInt(4, 7);
     }
 }

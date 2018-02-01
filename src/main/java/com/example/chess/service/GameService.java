@@ -1,6 +1,6 @@
 package com.example.chess.service;
 
-import com.example.chess.dto.CellParamsDTO;
+import com.example.chess.dto.CellDTO;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface GameService {
 
-    List<List<CellParamsDTO>> getStartArrangement();
+    List<List<CellDTO>> getStartArrangement();
 }

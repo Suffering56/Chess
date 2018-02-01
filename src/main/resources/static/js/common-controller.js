@@ -1,12 +1,14 @@
 app.controller('common', function ($scope, $http, initService) {
-    $scope.params = initService.initParams();
+    initService.initParams(function (params) {
+        $scope.params = params;
 
-    $http({
-        method: 'GET',
-        url: '/api/game/start'
-    }).then(function (response) {
-        $scope.piecesMatrix = response.data;
-        $scope.params.showBoard = true;
+        $http({
+            method: 'GET',
+            url: '/api/game/' + params.gameId + '/start'
+        }).then(function (response) {
+            $scope.piecesMatrix = response.data.cells;
+            $scope.params.showBoard = true;
+        });
     });
 
     var previousSelectedCell;
@@ -25,10 +27,15 @@ app.controller('common', function ($scope, $http, initService) {
 
     function update(rowIndex, columnIndex) {
         $http({
-            method: 'GET',
-            url: '/api/game/moves/' + rowIndex + '/' + columnIndex
+            method: 'POST',
+            url: '/api/game/' + $scope.params.gameId + '/move',
+            data: {
+                position: $scope.params.position,
+                selectedRow: rowIndex,
+                selectedColumn: columnIndex
+            }
         }).then(function (response) {
-            $scope.piecesMatrix = response.data;
+            $scope.piecesMatrix = response.data.cells;
         });
     }
 

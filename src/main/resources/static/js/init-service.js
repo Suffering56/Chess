@@ -1,10 +1,10 @@
 app.factory('initService', function ($http, $location) {
     var result = {};
 
-    result.initParams = function() {
+    result.initParams = function (callback) {
         var params = {
-            gameId: 0,
-            moveIndex: 0,
+            gameId: null,
+            position: 0,
             showBoard: false
         };
 
@@ -15,15 +15,26 @@ app.factory('initService', function ($http, $location) {
         if (result.isNewGame != true) {
             params.gameId = pathParts[2];
             if (path.indexOf('/move/') != -1) {
-                params.moveIndex = pathParts[4];
+                params.position = pathParts[4];
             } else {
-                $location.path('/game/' + params.gameId + '/move/' + params.moveIndex, false);
+                $location.path('/game/' + params.gameId + '/move/' + params.position, false);
             }
+
+            callback(params);
         } else {
-            $location.path('/game/' + params.gameId + '/move/' + params.moveIndex, false);
+            $http({
+                method: 'GET',
+                url: '/api/game/start'
+            }).then(function (response) {
+                var game = response.data;
+                params.gameId = game.id;
+                $location.path('/game/' + params.gameId + '/move/' + params.position, false);
+
+                callback(params);
+            });
         }
 
-        return params;
+        return null;
     };
 
     return result;

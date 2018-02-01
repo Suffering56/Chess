@@ -1,7 +1,7 @@
 package com.example.chess.entity;
 
-import com.example.chess.entity.enums.PieceType;
-import com.example.chess.entity.enums.Side;
+import com.example.chess.enums.PieceType;
+import com.example.chess.enums.Side;
 import lombok.Getter;
 import lombok.Setter;
 
