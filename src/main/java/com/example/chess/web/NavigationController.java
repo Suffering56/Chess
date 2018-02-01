@@ -17,15 +17,15 @@ public class NavigationController {
     @RequestMapping({
             "/",
             "/game/{gameId}",
-            "/game/{gameId}/move/{moveId}"
+            "/game/{gameId}/position/{position}"
     })
     public String redirect(@PathVariable(value = "gameId", required = false) String gameId,
-                           @PathVariable(value = "moveId", required = false) String moveId) throws NavigationException {
+                           @PathVariable(value = "position", required = false) String position) throws NavigationException {
         if (gameId != null && !StringUtils.isNumeric(gameId)) {
             throw new NavigationException("<gameId> must be a number");
         }
-        if (moveId != null && !StringUtils.isNumeric(moveId)) {
-            throw new NavigationException("<moveId> must be a number");
+        if (position != null && !StringUtils.isNumeric(position)) {
+            throw new NavigationException("<position> must be a number");
         }
         return VIEW;
     }
