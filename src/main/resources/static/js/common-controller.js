@@ -1,19 +1,49 @@
 app.controller("common", function ($scope, $http, initService) {
     $scope.horizontalLabels = ["h", "g", "f", "e", "d", "c", "b", "a"];
     $scope.verticalLabels = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
     $scope.player = {
-        isWhite: true
+        isWhite: null
     };
 
-    initService.initParams($scope, function (params) {
+    $scope.params = {
+        gameId: null,
+        position: 0,
+        gameStarted: false
+    };
+
+    var params = $scope.params;
+
+    initService.initParams($scope);
+
+    $scope.sideClick = function (isWhite) {
+        $scope.player.isWhite = isWhite;
+
+        $http({
+            method: "POST",
+            url: "/api/game/" + params.gameId + "/player/register",
+            data: {
+                isWhite: $scope.player.isWhite
+            }
+        }).then(function (response) {
+            if (response.status == 200) {
+                loadStartArrangement();
+            } else {
+                console.log("error: response.data", response.data);
+            }
+        });
+    };
+
+    function loadStartArrangement() {
         $http({
             method: "GET",
-            url: "/api/game/" + params.gameId + "/start"
+            url: "/api/game/" + params.gameId + "/start/arrangement"
         }).then(function (response) {
             $scope.piecesMatrix = response.data.cells;
-            $scope.params.showBoard = true;
+            params.gameStarted = true;
         });
-    });
+    }
+
 
     var previousSelectedCell;
 

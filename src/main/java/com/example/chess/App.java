@@ -8,7 +8,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 public class App extends SpringBootServletInitializer {
 
-    public static final String APP_VERSION = "v.0.0.1";
+    public static final String APP_VERSION = "v.0.0.2";
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

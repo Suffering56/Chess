@@ -1,6 +1,7 @@
 package com.example.chess.util;
 
 import com.example.chess.dto.ExceptionDTO;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,7 +17,17 @@ public class CommonErrorHandler {
     @ExceptionHandler(NavigationException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ExceptionDTO authenticationError(NavigationException e) {
-        return new ExceptionDTO(HttpStatus.NOT_FOUND, e.getMessage());
+    public ExceptionDTO navigationExceptionHandle(NavigationException e) {
+        return new ExceptionDTO(e);
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseBody
+    public ExceptionDTO sqlExceptionHandle(ConstraintViolationException e) {
+        System.out.println("\r\norg.hibernate.exception.ConstraintViolationException.constraintName = " + e.getConstraintName());
+        e.printStackTrace();
+        return new ExceptionDTO(e);
     }
 }

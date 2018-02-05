@@ -2,12 +2,7 @@ app.factory("initService", function ($http, $location) {
     var result = {};
 
     result.initParams = function (scope, callback) {
-        var params = {
-            gameId: null,
-            position: 0,
-            showBoard: false
-        };
-        scope.params = params;
+        var params = scope.params;
 
         const GAME_PREFIX = "/game/";
         const POSITION_PREFIX = "/position/";
@@ -24,7 +19,9 @@ app.factory("initService", function ($http, $location) {
                 $location.path(GAME_PREFIX + params.gameId + POSITION_PREFIX + params.position, false);
             }
 
-            callback(params);
+            if (callback) {
+                callback();
+            }
         } else {
             $http({
                 method: "GET",
@@ -34,7 +31,9 @@ app.factory("initService", function ($http, $location) {
                 params.gameId = game.id;
                 $location.path(GAME_PREFIX + params.gameId + POSITION_PREFIX + params.position, false);
 
-                callback(params);
+                if (callback) {
+                    callback();
+                }
             });
         }
     };

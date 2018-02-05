@@ -3,13 +3,17 @@ package com.example.chess.web;
 import com.example.chess.dto.CellDTO;
 import com.example.chess.dto.GameDTO;
 import com.example.chess.dto.MoveInputDTO;
+import com.example.chess.dto.SideChooseDTO;
 import com.example.chess.entity.Game;
+import com.example.chess.entity.Player;
 import com.example.chess.repository.GameRepository;
+import com.example.chess.repository.PlayerRepository;
 import com.example.chess.service.GameService;
 import com.example.chess.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -21,19 +25,33 @@ public class GameController {
 
     private final GameService gameService;
     private final GameRepository gameRepository;
+    private final PlayerRepository playerRepository;
 
     @Autowired
-    public GameController(GameService gameService, GameRepository gameRepository) {
+    public GameController(GameService gameService, GameRepository gameRepository, PlayerRepository playerRepository) {
         this.gameService = gameService;
         this.gameRepository = gameRepository;
+        this.playerRepository = playerRepository;
     }
 
     @GetMapping("/start")
-    public Game startGame() {
+    public Game createNewGame() {
         return gameRepository.save(new Game());
     }
 
-    @GetMapping("/{gameId}/start")
+    @PostMapping("/{gameId}/player/register")
+    public Player registerPlayer(@PathVariable("gameId") Long gameId,
+                               @RequestBody SideChooseDTO dto,
+                               HttpServletRequest request) {
+
+        Player player = new Player();
+        player.setGameId(gameId);
+        player.setIsWhite(dto.getIsWhite());
+        player.setSession(request.getSession().getId());
+        return playerRepository.save(player);
+    }
+
+    @GetMapping("/{gameId}/start/arrangement")
     public GameDTO getStartArrangement(@PathVariable("gameId") long gameId) {
         List<List<CellDTO>> cells = gameService.getStartArrangement();
 

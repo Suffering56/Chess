@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html class="html">
+<html>
 <head>
     <title>Chess application</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -17,10 +17,15 @@
 </head>
 
 
-<body ng-app="app" ng-controller="common">
+<body ng-app="app" ng-controller="common" class="body">
 
-<div class="playground">
-    <div class="chessboard" ng-if="params.showBoard">
+<div class="start-panel" ng-if="player.isWhite == null">
+    <button ng-click="sideClick(true)">white</button>
+    <button ng-click="sideClick(false)">black</button>
+</div>
+
+<div class="playground" ng-if="params.gameStarted">
+    <div class="chessboard">
         <div class="chessboard-row"
              ng-repeat="row in piecesMatrix | chessboardReverse:player.isWhite">
             <div class="chessboard-cell"
