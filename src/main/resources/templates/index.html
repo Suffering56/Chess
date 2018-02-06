@@ -19,7 +19,7 @@
 
 <body ng-app="app" ng-controller="common" class="body">
 
-<div class="start-panel" ng-if="player.isWhite == null">
+<div class="start-panel" ng-if="params.player.isWhite == null">
     <button ng-click="sideClick(true)">white</button>
     <button ng-click="sideClick(false)">black</button>
 </div>
@@ -27,9 +27,9 @@
 <div class="playground" ng-if="params.gameStarted">
     <div class="chessboard">
         <div class="chessboard-row"
-             ng-repeat="row in piecesMatrix | chessboardReverse:player.isWhite">
+             ng-repeat="row in piecesMatrix | chessboardReverse:params.player.isWhite">
             <div class="chessboard-cell"
-                 ng-repeat="cell in row | chessboardReverse:player.isWhite"
+                 ng-repeat="cell in row | chessboardReverse:params.player.isWhite"
                  ng-class="getCellClass(cell)">
                 <div class="chessboard-cell inner"
                      ng-class="getInnerCellClass(cell)"
@@ -38,9 +38,9 @@
         </div>
     </div>
 
-    <div class="horizontal-label" ng-repeat="hLabel in horizontalLabels | chessboardReverse:player.isWhite">{{hLabel}}</div>
+    <div class="horizontal-label" ng-repeat="hLabel in horizontalLabels | chessboardReverse:params.player.isWhite">{{hLabel}}</div>
     <div class="vertical-label_wrapper">
-        <div class="vertical-label" ng-repeat="vLabel in verticalLabels | chessboardReverse:player.isWhite">{{vLabel}}</div>
+        <div class="vertical-label" ng-repeat="vLabel in verticalLabels | chessboardReverse:params.player.isWhite">{{vLabel}}</div>
     </div>
 </div>
 

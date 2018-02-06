@@ -1,9 +1,6 @@
 package com.example.chess.web;
 
-import com.example.chess.dto.CellDTO;
-import com.example.chess.dto.GameDTO;
-import com.example.chess.dto.MoveInputDTO;
-import com.example.chess.dto.SideChooseDTO;
+import com.example.chess.dto.*;
 import com.example.chess.entity.Game;
 import com.example.chess.entity.Player;
 import com.example.chess.repository.GameRepository;
@@ -39,15 +36,37 @@ public class GameController {
         return gameRepository.save(new Game());
     }
 
-    @PostMapping("/{gameId}/player/register")
-    public Player registerPlayer(@PathVariable("gameId") Long gameId,
-                               @RequestBody SideChooseDTO dto,
-                               HttpServletRequest request) {
+    @GetMapping("/{gameId}/player/side")
+    public PlayerParamsDTO getSide(@PathVariable("gameId") Long gameId,
+                                   HttpServletRequest request) {
+
+        PlayerParamsDTO result = new PlayerParamsDTO();
+        Player byGameIdAndSessionId = playerRepository.findByGameIdAndSessionId(gameId, request.getSession().getId());
+
+        if (byGameIdAndSessionId != null) {
+            result.setIsWhite(byGameIdAndSessionId.getIsWhite());
+        } else {
+            Player byGameId = playerRepository.findFirstByGameId(gameId);
+            if (byGameId != null) {
+                result.setIsViewer(true);
+                result.setIsWhite(true);
+            } else {
+                return null;
+            }
+        }
+
+        return result;
+    }
+
+    @PostMapping("/{gameId}/player/side")
+    public Player setSide(@PathVariable("gameId") Long gameId,
+                          @RequestBody SideChooseDTO dto,
+                          HttpServletRequest request) {
 
         Player player = new Player();
         player.setGameId(gameId);
         player.setIsWhite(dto.getIsWhite());
-        player.setSession(request.getSession().getId());
+        player.setSessionId(request.getSession().getId());
         return playerRepository.save(player);
     }
 

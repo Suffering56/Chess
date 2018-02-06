@@ -23,7 +23,7 @@ public class Player {
 
     private Long userId;
 
-    private String session;
+    private String sessionId;
 
     private Boolean isWhite;
 

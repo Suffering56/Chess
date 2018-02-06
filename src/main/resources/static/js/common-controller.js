@@ -2,35 +2,31 @@ app.controller("common", function ($scope, $http, initService) {
     $scope.horizontalLabels = ["h", "g", "f", "e", "d", "c", "b", "a"];
     $scope.verticalLabels = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
-    $scope.player = {
-        isWhite: null
-    };
-
     $scope.params = {
         gameId: null,
         position: 0,
-        gameStarted: false
+        gameStarted: false,
+        player: {
+            isWhite: null,
+            isViewer: true
+        }
     };
 
     var params = $scope.params;
+    var player = params.player;
 
-    initService.initParams($scope);
+    initService.checkPath($scope, loadStartArrangement);
 
     $scope.sideClick = function (isWhite) {
-        $scope.player.isWhite = isWhite;
-
         $http({
             method: "POST",
-            url: "/api/game/" + params.gameId + "/player/register",
+            url: "/api/game/" + params.gameId + "/player/side",
             data: {
-                isWhite: $scope.player.isWhite
+                isWhite: isWhite
             }
-        }).then(function (response) {
-            if (response.status == 200) {
-                loadStartArrangement();
-            } else {
-                console.log("error: response.data", response.data);
-            }
+        }).then(function () {
+            player.isWhite = isWhite;
+            loadStartArrangement();
         });
     };
 
@@ -44,10 +40,12 @@ app.controller("common", function ($scope, $http, initService) {
         });
     }
 
-
     var previousSelectedCell;
 
     $scope.doClick = function (cell) {
+        if (player.isViewer == true) {
+            return;
+        }
         if (previousSelectedCell) {
             previousSelectedCell.selected = false;
         }
@@ -95,6 +93,5 @@ app.controller("common", function ($scope, $http, initService) {
 
         return result;
     };
-
 
 });
