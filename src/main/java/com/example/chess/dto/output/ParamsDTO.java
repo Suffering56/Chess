@@ -1,4 +1,4 @@
-package com.example.chess.dto;
+package com.example.chess.dto.output;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,10 +10,10 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class GameDTO {
+public class ParamsDTO {
 
-    private long gameId;
-    private long position = 0;
+    private Long gameId;
+    private Integer position = 0;
 
     private List<List<CellDTO>> cells;
 }

@@ -6,7 +6,7 @@ app.controller("common", function ($scope, $http, initService) {
         gameStarted: false,
         game: {
             id: null,
-            position : 0
+            position: 0
         },
         player: {
             isWhite: null,
@@ -18,30 +18,13 @@ app.controller("common", function ($scope, $http, initService) {
     var game = params.game;
     var player = params.player;
 
-    initService.checkPathAndInit($scope, loadStartArrangement);
+    initService.checkPathAndInit(params, function (response) {
+        $scope.piecesMatrix = response.data.cells;
+        params.gameStarted = true;
+    });
 
-    $scope.sideClick = function (isWhite) {
-        $http({
-            method: "POST",
-            url: "/api/game/" + game.id + "/player/side",
-            data: {
-                isWhite: isWhite
-            }
-        }).then(function () {
-            player.isWhite = isWhite;
-            loadStartArrangement();
-        });
-    };
+    $scope.sideClick = initService.sideClick;
 
-    function loadStartArrangement() {
-        $http({
-            method: "GET",
-            url: "/api/game/" + game.id + "/start/arrangement"
-        }).then(function (response) {
-            $scope.piecesMatrix = response.data.cells;
-            params.gameStarted = true;
-        });
-    }
 
     var previousSelectedCell;
 

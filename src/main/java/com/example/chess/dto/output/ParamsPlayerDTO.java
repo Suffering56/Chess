@@ -1,4 +1,4 @@
-package com.example.chess.dto;
+package com.example.chess.dto.output;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayerParamsDTO {
+public class ParamsPlayerDTO {
 
     private Boolean isWhite;
     private Boolean isViewer = false;

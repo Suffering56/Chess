@@ -1,4 +1,4 @@
-package com.example.chess.dto;
+package com.example.chess.dto.output.exceptions;
 
 import com.example.chess.util.Utils;
 import lombok.Getter;

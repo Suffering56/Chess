@@ -1,4 +1,4 @@
-package com.example.chess.dto;
+package com.example.chess.dto.input;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class MoveInputDTO {
+public class MoveStartDTO {
 
     private Long position;
     private Integer selectedRow;

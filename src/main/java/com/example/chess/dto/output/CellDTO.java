@@ -1,4 +1,4 @@
-package com.example.chess.dto;
+package com.example.chess.dto.output;
 
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;

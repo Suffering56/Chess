@@ -1,6 +1,6 @@
 package com.example.chess.service.impl;
 
-import com.example.chess.dto.CellDTO;
+import com.example.chess.dto.output.CellDTO;
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;
 import com.example.chess.service.GameService;
@@ -15,16 +15,18 @@ import java.util.List;
 @Service
 public class GameServiceImpl implements GameService {
 
+    private static final int BOARD_SIZE = 8;
+
     @Override
-    public List<List<CellDTO>> getStartArrangement() {
+    public List<List<CellDTO>> createStartArrangementPieceMatrix() {
         List<List<CellDTO>> rows = new ArrayList<>();
 
         //1-8
-        for (int rowIndex = 0; rowIndex < 8; rowIndex++) {
+        for (int rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++) {
             List<CellDTO> cells = new ArrayList<>();
 
             //A-H
-            for (int columnIndex = 0; columnIndex < 8; columnIndex++) {
+            for (int columnIndex = 0; columnIndex < BOARD_SIZE; columnIndex++) {
                 CellDTO cell = new CellDTO(rowIndex, columnIndex);
 
                 if (rowIndex == 0 || rowIndex == 1) {

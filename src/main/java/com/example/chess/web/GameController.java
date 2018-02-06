@@ -1,6 +1,10 @@
 package com.example.chess.web;
 
-import com.example.chess.dto.*;
+import com.example.chess.dto.input.MoveStartDTO;
+import com.example.chess.dto.input.SideChooseDTO;
+import com.example.chess.dto.output.CellDTO;
+import com.example.chess.dto.output.ParamsDTO;
+import com.example.chess.dto.output.ParamsPlayerDTO;
 import com.example.chess.entity.Game;
 import com.example.chess.entity.Player;
 import com.example.chess.repository.GameRepository;
@@ -37,10 +41,10 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}/player/side")
-    public PlayerParamsDTO getSide(@PathVariable("gameId") Long gameId,
+    public ParamsPlayerDTO getSide(@PathVariable("gameId") Long gameId,
                                    HttpServletRequest request) {
 
-        PlayerParamsDTO result = new PlayerParamsDTO();
+        ParamsPlayerDTO result = new ParamsPlayerDTO();
         Player byGameIdAndSessionId = playerRepository.findByGameIdAndSessionId(gameId, request.getSession().getId());
 
         if (byGameIdAndSessionId != null) {
@@ -71,10 +75,10 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}/start/arrangement")
-    public GameDTO getStartArrangement(@PathVariable("gameId") long gameId) {
-        List<List<CellDTO>> cells = gameService.getStartArrangement();
+    public ParamsDTO getStartArrangement(@PathVariable("gameId") long gameId) {
+        List<List<CellDTO>> cells = gameService.createStartArrangementPieceMatrix();
 
-        GameDTO result = new GameDTO();
+        ParamsDTO result = new ParamsDTO();
         result.setCells(cells);
         result.setGameId(gameId);
 
@@ -82,17 +86,17 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/move")
-    public GameDTO getAvailableMoves(@PathVariable("gameId") Long gameId,
-                                     @RequestBody MoveInputDTO dto) {
+    public ParamsDTO getAvailableMoves(@PathVariable("gameId") Long gameId,
+                                       @RequestBody MoveStartDTO dto) {
 //        Game game = gameRepository.findOne(gameId);
-        List<List<CellDTO>> cells = gameService.getStartArrangement();
+        List<List<CellDTO>> cells = gameService.createStartArrangementPieceMatrix();
 
         cells.get(3).get(3).setAvailable(true);
         cells.get(4).get(3).setAvailable(true);
         cells.get(rnd()).get(rnd()).setAvailable(true);
         cells.get(dto.getSelectedRow()).get(dto.getSelectedColumn()).setSelected(true);
 
-        GameDTO result = new GameDTO();
+        ParamsDTO result = new ParamsDTO();
         result.setGameId(gameId);
         result.setCells(cells);
 

@@ -1,6 +1,6 @@
 package com.example.chess.util;
 
-import com.example.chess.dto.ExceptionDTO;
+import com.example.chess.dto.output.exceptions.ExceptionDTO;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

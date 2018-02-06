@@ -3,34 +3,35 @@ app.factory("initService", function ($http, $location, $window) {
     const POSITION_PREFIX = "/position/";
 
     var result = {};
-    var onGameContinue;
     var path = $location.path();
+    var onGameStarted;
+    var params;
 
-    result.checkPathAndInit = function (scope, _onGameContinue) {
-        onGameContinue = _onGameContinue;
-
+    result.checkPathAndInit = function (_params, _onGameStarted) {
+        onGameStarted = _onGameStarted;
+        params = _params;
         var isNewGame = path.indexOf(GAME_PREFIX) == -1;
 
         if (isNewGame == true) {
-            initNewGamePath(scope.params);
+            initNewGamePath();
         } else {
-            initContinueGamePath(scope.params);
+            initContinueGamePath();
         }
     };
 
-    function initNewGamePath(params) {
+    function initNewGamePath() {
         $http({
             method: "GET",
             url: "/api/game/start"
         }).then(function (response) {
-            var game = response.data;
-            params.game.id = game.id;
-            params.game.position = game.position;
+            var responseGame = response.data;
+            params.game.id = responseGame.id;
+            params.game.position = responseGame.position;
             $location.path(GAME_PREFIX + params.game.id + POSITION_PREFIX + params.game.position);
         });
     }
 
-    function initContinueGamePath(params) {
+    function initContinueGamePath() {
         var pathParts = path.split("/");
 
         params.game.id = pathParts[2];
@@ -40,10 +41,10 @@ app.factory("initService", function ($http, $location, $window) {
             $location.path(GAME_PREFIX + params.game.id + POSITION_PREFIX + params.game.position);
         }
 
-        checkPlayerSide(params);
+        checkPlayerSide();
     }
 
-    function checkPlayerSide(params) {
+    function checkPlayerSide() {
         $http({
             method: "GET",
             url: "/api/game/" + params.game.id + "/player/side"
@@ -56,9 +57,9 @@ app.factory("initService", function ($http, $location, $window) {
 
                 if (playerParams.isViewer == true) {
                     alert("player-params not found: you can only view this game");
-                    continueGame(onGameContinue);
+                    call(loadStartArrangement());
                 } else if (playerParams.isWhite != null) {
-                    continueGame(onGameContinue);
+                    call(loadStartArrangement());
                 }
             } else {
                 alert("game not found");
@@ -67,7 +68,29 @@ app.factory("initService", function ($http, $location, $window) {
         });
     }
 
-    function continueGame(callback) {
+    result.sideClick = function (isWhite) {
+        $http({
+            method: "POST",
+            url: "/api/game/" + params.game.id + "/player/side",
+            data: {
+                isWhite: isWhite
+            }
+        }).then(function () {
+            params.player.isWhite = isWhite;
+            call(loadStartArrangement());
+        });
+    };
+
+    function loadStartArrangement() {
+        $http({
+            method: "GET",
+            url: "/api/game/" + params.game.id + "/start/arrangement"
+        }).then(function (response) {
+            call(onGameStarted(response));
+        });
+    }
+
+    function call(callback) {
         if (callback) {
             callback();
         }
