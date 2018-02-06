@@ -3,24 +3,27 @@ app.controller("common", function ($scope, $http, initService) {
     $scope.verticalLabels = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
     $scope.params = {
-        gameId: null,
-        position: 0,
         gameStarted: false,
+        game: {
+            id: null,
+            position : 0
+        },
         player: {
             isWhite: null,
-            isViewer: true
+            isViewer: false
         }
     };
 
     var params = $scope.params;
+    var game = params.game;
     var player = params.player;
 
-    initService.checkPath($scope, loadStartArrangement);
+    initService.checkPathAndInit($scope, loadStartArrangement);
 
     $scope.sideClick = function (isWhite) {
         $http({
             method: "POST",
-            url: "/api/game/" + params.gameId + "/player/side",
+            url: "/api/game/" + game.id + "/player/side",
             data: {
                 isWhite: isWhite
             }
@@ -33,7 +36,7 @@ app.controller("common", function ($scope, $http, initService) {
     function loadStartArrangement() {
         $http({
             method: "GET",
-            url: "/api/game/" + params.gameId + "/start/arrangement"
+            url: "/api/game/" + game.id + "/start/arrangement"
         }).then(function (response) {
             $scope.piecesMatrix = response.data.cells;
             params.gameStarted = true;
@@ -58,9 +61,9 @@ app.controller("common", function ($scope, $http, initService) {
     function update(cell) {
         $http({
             method: "POST",
-            url: "/api/game/" + $scope.params.gameId + "/move",
+            url: "/api/game/" + game.id + "/move",
             data: {
-                position: $scope.params.position,
+                position: game.position,
                 selectedRow: cell.rowIndex,
                 selectedColumn: cell.columnIndex
             }

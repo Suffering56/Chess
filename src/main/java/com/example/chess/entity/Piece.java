@@ -20,9 +20,11 @@ public class Piece {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Side side;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PieceType type;
 
 }

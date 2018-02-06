@@ -6,7 +6,7 @@ app.factory("initService", function ($http, $location, $window) {
     var onGameContinue;
     var path = $location.path();
 
-    result.checkPath = function (scope, _onGameContinue) {
+    result.checkPathAndInit = function (scope, _onGameContinue) {
         onGameContinue = _onGameContinue;
 
         var isNewGame = path.indexOf(GAME_PREFIX) == -1;
@@ -24,19 +24,20 @@ app.factory("initService", function ($http, $location, $window) {
             url: "/api/game/start"
         }).then(function (response) {
             var game = response.data;
-            params.gameId = game.id;
-            $location.path(GAME_PREFIX + params.gameId + POSITION_PREFIX + params.position, false);
+            params.game.id = game.id;
+            params.game.position = game.position;
+            $location.path(GAME_PREFIX + params.game.id + POSITION_PREFIX + params.game.position);
         });
     }
 
     function initContinueGamePath(params) {
         var pathParts = path.split("/");
 
-        params.gameId = pathParts[2];
+        params.game.id = pathParts[2];
         if (path.indexOf(POSITION_PREFIX) != -1) {
-            params.position = pathParts[4];
+            params.game.position = pathParts[4];
         } else {
-            $location.path(GAME_PREFIX + params.gameId + POSITION_PREFIX + params.position, false);
+            $location.path(GAME_PREFIX + params.game.id + POSITION_PREFIX + params.game.position);
         }
 
         checkPlayerSide(params);
@@ -45,12 +46,14 @@ app.factory("initService", function ($http, $location, $window) {
     function checkPlayerSide(params) {
         $http({
             method: "GET",
-            url: "/api/game/" + params.gameId + "/player/side"
+            url: "/api/game/" + params.game.id + "/player/side"
         }).then(function (response) {
             var playerParams = response.data;
+
             if (playerParams) {
                 params.player.isWhite = playerParams.isWhite;
                 params.player.isViewer = playerParams.isViewer;
+
                 if (playerParams.isViewer == true) {
                     alert("player-params not found: you can only view this game");
                     continueGame(onGameContinue);
