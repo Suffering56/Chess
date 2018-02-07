@@ -29,16 +29,20 @@ app.controller("common", function ($scope, $http, initService) {
     var previousSelectedCell;
 
     $scope.doClick = function (cell) {
-        if (player.isViewer == true) {
+        if (player.isViewer == true || cell.selected == true) {
             return;
         }
-        if (previousSelectedCell) {
-            previousSelectedCell.selected = false;
-        }
-        cell.selected = true;
-        previousSelectedCell = cell;
+        var expectedSide = (game.position % 2 == 0) ? "white" : "black";
 
-        update(cell);
+        if (cell.side && cell.side == expectedSide) {
+            if (previousSelectedCell) {
+                previousSelectedCell.selected = false;
+            }
+            cell.selected = true;
+            previousSelectedCell = cell;
+
+            update(cell);
+        }
     };
 
     function update(cell) {
@@ -46,9 +50,8 @@ app.controller("common", function ($scope, $http, initService) {
             method: "POST",
             url: "/api/game/" + game.id + "/move",
             data: {
-                position: game.position,
-                selectedRow: cell.rowIndex,
-                selectedColumn: cell.columnIndex
+                rowIndex: cell.rowIndex,
+                columnIndex: cell.columnIndex
             }
         }).then(function (response) {
             $scope.piecesMatrix = response.data.cells;

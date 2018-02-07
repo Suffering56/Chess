@@ -1,5 +1,6 @@
 package com.example.chess.dto.output;
 
+import com.example.chess.dto.PointDTO;
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;
 import lombok.Getter;
@@ -10,17 +11,15 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CellDTO {
+public class CellDTO extends PointDTO {
 
     private Side side;
     private PieceType piece;
     private boolean available;
     private boolean selected;
-    private Integer rowIndex;
-    private Integer columnIndex;
 
-    public CellDTO(Integer rowIndex, Integer columnIndex) {
-        this.rowIndex = rowIndex;
-        this.columnIndex = columnIndex;
+    public CellDTO(Integer row, Integer column) {
+        this.rowIndex = row;
+        this.columnIndex = column;
     }
 }

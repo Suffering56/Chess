@@ -22,7 +22,7 @@ app.factory("initService", function ($http, $location, $window) {
     function initNewGamePath() {
         $http({
             method: "GET",
-            url: "/api/game/start"
+            url: "/api/init"
         }).then(function (response) {
             var responseGame = response.data;
             params.game.id = responseGame.id;
@@ -47,7 +47,7 @@ app.factory("initService", function ($http, $location, $window) {
     function checkPlayerSide() {
         $http({
             method: "GET",
-            url: "/api/game/" + params.game.id + "/player/side"
+            url: "/api/init/" + params.game.id + "/side"
         }).then(function (response) {
             var playerParams = response.data;
 
@@ -71,7 +71,7 @@ app.factory("initService", function ($http, $location, $window) {
     result.sideClick = function (isWhite) {
         $http({
             method: "POST",
-            url: "/api/game/" + params.game.id + "/player/side",
+            url: "/api/init/" + params.game.id + "/side",
             data: {
                 isWhite: isWhite
             }
@@ -84,7 +84,7 @@ app.factory("initService", function ($http, $location, $window) {
     function loadStartArrangement() {
         $http({
             method: "GET",
-            url: "/api/game/" + params.game.id + "/start/arrangement"
+            url: "/api/init/" + params.game.id + "/arrangement"
         }).then(function (response) {
             call(onGameStarted(response));
         });
