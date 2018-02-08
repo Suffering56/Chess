@@ -1,7 +1,9 @@
 package com.example.chess.service;
 
 import com.example.chess.dto.PointDTO;
-import com.example.chess.dto.output.CellDTO;
+import com.example.chess.dto.input.MoveDTO;
+import com.example.chess.dto.output.ParamsDTO;
+import com.example.chess.entity.Game;
 
 import java.util.List;
 
@@ -10,7 +12,15 @@ import java.util.List;
  */
 public interface GameService {
 
-    List<List<CellDTO>> createStartArrangementPieceMatrix();
+    ParamsDTO getArrangementByPosition(long gameId, int position);
 
     List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell);
+
+    Game createNewGame();
+
+    ParamsDTO applyMove(long gameId, MoveDTO dto);
+
+    Game getGame();
+
+    Game findGameById(long gameId);
 }

@@ -25,6 +25,7 @@ public class Player {
 
     private String sessionId;
 
+    @Column(nullable = false)
     private Boolean isWhite;
 
     @Column(nullable = false)

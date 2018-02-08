@@ -6,7 +6,7 @@ app.controller("common", function ($scope, $http, initService) {
         gameStarted: false,
         game: {
             id: null,
-            position: 0
+            position: null
         },
         player: {
             isWhite: null,
@@ -18,39 +18,75 @@ app.controller("common", function ($scope, $http, initService) {
     var game = params.game;
     var player = params.player;
 
-    initService.checkPathAndInit(params, function (response) {
-        $scope.piecesMatrix = response.data.cells;
+    var onGameStarted = function (response) {
+        $scope.piecesMatrix = response.data.piecesMatrix;
         params.gameStarted = true;
-    });
+    };
+
+    initService.init(params, onGameStarted);
 
     $scope.sideClick = initService.sideClick;
 
 
-    var prevSelectedCell;
-    var prevAvailablePoints;
+    var selectedCell;
+    var availablePoints;
 
     $scope.doClick = function (cell) {
         if (player.isViewer == true || cell.selected == true) {
             return;
         }
-        var expectedSide = (game.position % 2 == 0) ? "white" : "black";
 
-        if (cell.side && cell.side == expectedSide) {
-            if (prevSelectedCell) {
-                prevSelectedCell.selected = false;
-            }
-            cell.selected = true;
-            prevSelectedCell = cell;
-
-            getAvailableMoves(cell);
+        if (cell.available == true) {
+            applyMove(cell);
+        } else {
+            selectCell(cell);
         }
     };
 
-    function getAvailableMoves(cell) {
+    function applyMove(cell) {
         $http({
             method: "POST",
             url: "/api/game/" + game.id + "/move",
             data: {
+                from: {
+                    rowIndex: selectedCell.rowIndex,
+                    columnIndex: selectedCell.columnIndex
+                },
+                to: {
+                    rowIndex: cell.rowIndex,
+                    columnIndex: cell.columnIndex
+                }
+            }
+        }).then(function (response) {
+            handleApplyMove(response.data);
+        });
+    }
+
+    function handleApplyMove(paramsDTO) {
+        game.position = paramsDTO.game.position;
+        $scope.piecesMatrix = paramsDTO.piecesMatrix;
+        initService.updatePath();
+    }
+
+    function selectCell(cell) {
+        var expectedSide = (game.position % 2 == 0) ? "white" : "black";
+
+        if (cell.side && cell.side == expectedSide) {
+            if (selectedCell) {
+                selectedCell.selected = false;
+            }
+            cell.selected = true;
+            selectedCell = cell;
+
+            getAvailableMoves(cell);
+        }
+    }
+
+    function getAvailableMoves(cell) {
+        $http({
+            method: "GET",
+            url: "/api/game/" + game.id + "/move",
+            params: {
                 rowIndex: cell.rowIndex,
                 columnIndex: cell.columnIndex
             }
@@ -60,15 +96,15 @@ app.controller("common", function ($scope, $http, initService) {
     }
 
     var handleAvailableMoves = function (points) {
-        if (prevAvailablePoints) {
-            prevAvailablePoints.map(function (point) {
+        if (availablePoints) {
+            availablePoints.map(function (point) {
                 getCellByPoint(point).available = false;
             });
         }
         points.map(function (point) {
             getCellByPoint(point).available = true;
         });
-        prevAvailablePoints = points;
+        availablePoints = points;
     };
 
     $scope.getCellClass = function (cell) {

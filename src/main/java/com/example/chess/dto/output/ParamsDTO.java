@@ -1,5 +1,6 @@
 package com.example.chess.dto.output;
 
+import com.example.chess.entity.Game;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +13,6 @@ import java.util.List;
 @Setter
 public class ParamsDTO {
 
-    private Long gameId;
-    private Integer position = 0;
-
-    private List<List<CellDTO>> cells;
+    private List<List<CellDTO>> piecesMatrix;
+    private Game game;
 }
