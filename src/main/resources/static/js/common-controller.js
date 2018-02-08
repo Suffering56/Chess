@@ -26,7 +26,8 @@ app.controller("common", function ($scope, $http, initService) {
     $scope.sideClick = initService.sideClick;
 
 
-    var previousSelectedCell;
+    var prevSelectedCell;
+    var prevAvailablePoints;
 
     $scope.doClick = function (cell) {
         if (player.isViewer == true || cell.selected == true) {
@@ -35,17 +36,17 @@ app.controller("common", function ($scope, $http, initService) {
         var expectedSide = (game.position % 2 == 0) ? "white" : "black";
 
         if (cell.side && cell.side == expectedSide) {
-            if (previousSelectedCell) {
-                previousSelectedCell.selected = false;
+            if (prevSelectedCell) {
+                prevSelectedCell.selected = false;
             }
             cell.selected = true;
-            previousSelectedCell = cell;
+            prevSelectedCell = cell;
 
-            update(cell);
+            getAvailableMoves(cell);
         }
     };
 
-    function update(cell) {
+    function getAvailableMoves(cell) {
         $http({
             method: "POST",
             url: "/api/game/" + game.id + "/move",
@@ -54,9 +55,21 @@ app.controller("common", function ($scope, $http, initService) {
                 columnIndex: cell.columnIndex
             }
         }).then(function (response) {
-            $scope.piecesMatrix = response.data.cells;
+            handleAvailableMoves(response.data);
         });
     }
+
+    var handleAvailableMoves = function (points) {
+        if (prevAvailablePoints) {
+            prevAvailablePoints.map(function (point) {
+                getCellByPoint(point).available = false;
+            });
+        }
+        points.map(function (point) {
+            getCellByPoint(point).available = true;
+        });
+        prevAvailablePoints = points;
+    };
 
     $scope.getCellClass = function (cell) {
         if ((cell.rowIndex + cell.columnIndex) % 2 == 0) {
@@ -82,5 +95,13 @@ app.controller("common", function ($scope, $http, initService) {
 
         return result;
     };
+
+    function getCell(rowIndex, columnIndex) {
+        return $scope.piecesMatrix[rowIndex][columnIndex];
+    }
+
+    function getCellByPoint(point) {
+        return getCell(point.rowIndex, point.columnIndex);
+    }
 
 });

@@ -1,5 +1,6 @@
 package com.example.chess.service;
 
+import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.output.CellDTO;
 
 import java.util.List;
@@ -10,4 +11,6 @@ import java.util.List;
 public interface GameService {
 
     List<List<CellDTO>> createStartArrangementPieceMatrix();
+
+    List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell);
 }

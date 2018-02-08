@@ -1,9 +1,11 @@
 package com.example.chess.service.impl;
 
+import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.output.CellDTO;
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;
 import com.example.chess.service.GameService;
+import com.example.chess.util.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -57,5 +59,18 @@ public class GameServiceImpl implements GameService {
         }
 
         return rows;
+    }
+
+    @Override
+    public List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell) {
+        return new ArrayList<PointDTO>() {{
+            add(new PointDTO(3, 3));
+            add(new PointDTO(4, 3));
+            add(new PointDTO(rnd(), rnd()));
+        }};
+    }
+
+    private static int rnd() {
+        return Utils.generateRandomInt(4, 7);
     }
 }

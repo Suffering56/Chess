@@ -4,6 +4,7 @@ import com.example.chess.dto.PointDTO;
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
 public class CellDTO extends PointDTO {
 
     private Side side;
@@ -18,8 +20,7 @@ public class CellDTO extends PointDTO {
     private boolean available;
     private boolean selected;
 
-    public CellDTO(Integer row, Integer column) {
-        this.rowIndex = row;
-        this.columnIndex = column;
+    public CellDTO(Integer rowIndex, Integer columnIndex) {
+        super(rowIndex, columnIndex);
     }
 }
