@@ -1,5 +1,7 @@
 package com.example.chess.service.impl;
 
+import com.example.chess.aspects.ProfileExecutionTime;
+import com.example.chess.aspects.SynchronizeGame;
 import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.input.MoveDTO;
 import com.example.chess.dto.output.CellDTO;
@@ -45,6 +47,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @SynchronizeGame
+    @ProfileExecutionTime
     public Game createNewGame() {
         game = gameRepository.save(new Game());
         piecesMatrix = createStartArrangement();
