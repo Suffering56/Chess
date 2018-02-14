@@ -5,13 +5,17 @@ import com.example.chess.dto.input.MoveDTO;
 import com.example.chess.dto.output.CellDTO;
 import com.example.chess.dto.output.ParamsDTO;
 import com.example.chess.entity.Game;
+import com.example.chess.entity.History;
 import com.example.chess.enums.PieceType;
 import com.example.chess.enums.Side;
+import com.example.chess.exceptions.GameNotMatchedException;
 import com.example.chess.repository.GameRepository;
+import com.example.chess.repository.HistoryRepository;
 import com.example.chess.service.GameService;
 import com.example.chess.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.ArrayList;
@@ -26,11 +30,12 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private HistoryRepository historyRepository;
 
-    private static final int BOARD_SIZE = 8;
     private List<List<CellDTO>> piecesMatrix;
     private Game game;
-    private int servicePosition = 0;
+    private int currentMatrixPosition = 0;
 
     @Override
     public Game findGameById(long gameId) {
@@ -56,23 +61,30 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public ParamsDTO applyMove(long gameId, MoveDTO dto) {
-        CellDTO from = piecesMatrix.get(dto.getFrom().getRowIndex()).get(dto.getFrom().getColumnIndex());
-        CellDTO to = piecesMatrix.get(dto.getTo().getRowIndex()).get(dto.getTo().getColumnIndex());
+    @Transactional
+    public ParamsDTO applyMove(long gameId, MoveDTO dto) throws GameNotMatchedException {
+        checkGame(gameId);
+        int newPosition = game.getPosition() + 1;
 
-        to.setSide(from.getSide());
-        to.setPiece(from.getPiece());
-
-        from.setSide(null);
-        from.setPiece(null);
+        movePiece(dto.getFrom().getRowIndex(), dto.getFrom().getColumnIndex(),
+                dto.getTo().getRowIndex(), dto.getTo().getColumnIndex());
 
         clearMatrix();
 
-        game.setPosition(game.getPosition() + 1);
+        History historyItem = new History();
+        historyItem.setGameId(gameId);
+        historyItem.setRowIndexFrom(dto.getFrom().getRowIndex());
+        historyItem.setColumnIndexFrom(dto.getFrom().getColumnIndex());
+        historyItem.setRowIndexTo(dto.getTo().getRowIndex());
+        historyItem.setColumnIndexTo(dto.getTo().getColumnIndex());
+        historyItem.setPosition(newPosition);
+
+        game.setPosition(newPosition);
+
+        historyRepository.save(historyItem);
         gameRepository.save(game);
 
         ParamsDTO result = new ParamsDTO();
-
         result.setPiecesMatrix(piecesMatrix);
         result.setGame(game);
 
@@ -81,19 +93,43 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public ParamsDTO getArrangementByPosition(long gameId, int position) {
-        if (position != servicePosition) {
-            piecesMatrix = createStartArrangement();
-            //TODO: load history of moves and change matrix
-
-            servicePosition = position;
+        if (position != currentMatrixPosition) {
+            piecesMatrix = createPiecesMatrixByPosition(gameId, position);
+            currentMatrixPosition = position;
         }
 
         return createParamsDTO();
     }
 
-    @Override
-    public Game getGame() {
-        return game;
+    private void checkGame(long gameId) throws GameNotMatchedException {
+        if (gameId != game.getId()) {
+            throw new GameNotMatchedException();
+        }
+    }
+
+    private void movePiece(int rowFrom, int columnFrom, int rowTo, int columnTo) {
+        CellDTO from = piecesMatrix.get(rowFrom).get(columnFrom);
+        CellDTO to = piecesMatrix.get(rowTo).get(columnTo);
+
+        to.setSide(from.getSide());
+        to.setPiece(from.getPiece());
+
+        from.setSide(null);
+        from.setPiece(null);
+    }
+
+    private List<List<CellDTO>> createPiecesMatrixByPosition(long gameId, int position) {
+        List<List<CellDTO>> result = createStartArrangement();
+
+        if (position > 0) {
+            List<History> historyList = historyRepository.findByGameIdAndPositionLessThanEqualOrderByPosition(gameId, position);
+            for (History item : historyList) {
+                movePiece(item.getRowIndexFrom(), item.getColumnIndexFrom(),
+                        item.getRowIndexTo(), item.getColumnIndexTo());
+            }
+        }
+
+        return result;
     }
 
     private ParamsDTO createParamsDTO() {
@@ -119,6 +155,7 @@ public class GameServiceImpl implements GameService {
     private List<List<CellDTO>> createStartArrangement() {
         List<List<CellDTO>> result = new ArrayList<>();
 
+        final int BOARD_SIZE = 8;
         //1-8
         for (int rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++) {
             List<CellDTO> cells = new ArrayList<>();

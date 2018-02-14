@@ -1,4 +1,4 @@
-app.controller("common", function ($scope, $http, initService) {
+app.controller("common", function ($scope, $http, $window, initService) {
     $scope.horizontalLabels = ["h", "g", "f", "e", "d", "c", "b", "a"];
     $scope.verticalLabels = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
@@ -44,9 +44,10 @@ app.controller("common", function ($scope, $http, initService) {
     };
 
     function applyMove(cell) {
+        var url = "/api/game/" + game.id + "/move";
         $http({
             method: "POST",
-            url: "/api/game/" + game.id + "/move",
+            url: url,
             data: {
                 from: {
                     rowIndex: selectedCell.rowIndex,
@@ -59,6 +60,8 @@ app.controller("common", function ($scope, $http, initService) {
             }
         }).then(function (response) {
             handleApplyMove(response.data);
+        }, function (reason) {
+            // $window.location.href = url;
         });
     }
 

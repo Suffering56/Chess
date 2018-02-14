@@ -3,6 +3,7 @@ package com.example.chess.web;
 import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.input.MoveDTO;
 import com.example.chess.dto.output.ParamsDTO;
+import com.example.chess.exceptions.GameNotMatchedException;
 import com.example.chess.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class GameController {
 
     @PostMapping("/{gameId}/move")
     public ParamsDTO applyMove(@PathVariable("gameId") long gameId,
-                               @RequestBody MoveDTO dto) {
+                               @RequestBody MoveDTO dto) throws GameNotMatchedException {
 
         return gameService.applyMove(gameId, dto);
     }

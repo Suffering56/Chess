@@ -4,6 +4,7 @@ import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.input.MoveDTO;
 import com.example.chess.dto.output.ParamsDTO;
 import com.example.chess.entity.Game;
+import com.example.chess.exceptions.GameNotMatchedException;
 
 import java.util.List;
 
@@ -18,9 +19,7 @@ public interface GameService {
 
     Game createNewGame();
 
-    ParamsDTO applyMove(long gameId, MoveDTO dto);
-
-    Game getGame();
+    ParamsDTO applyMove(long gameId, MoveDTO dto) throws GameNotMatchedException;
 
     Game findGameById(long gameId);
 }

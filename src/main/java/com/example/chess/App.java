@@ -1,22 +1,17 @@
 package com.example.chess;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
 
+@Log4j2
 @SpringBootApplication
-public class App extends SpringBootServletInitializer {
+public class App {
 
-    public static final String APP_VERSION = "v.0.0.2";
-
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(App.class);
-    }
+    public static final String APP_VERSION = "v.0.0.3";
 
     public static void main(String[] args) {
-        System.out.println("APP_VERSION = " + APP_VERSION);
+        log.info("APP_VERSION = " + APP_VERSION);
         SpringApplication.run(App.class, args);
     }
 }
