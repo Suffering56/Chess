@@ -15,7 +15,7 @@ public interface GameService {
 
     ParamsDTO getArrangementByPosition(long gameId, int position);
 
-    List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell);
+    List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell) throws GameNotMatchedException;
 
     Game createNewGame();
 

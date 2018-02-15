@@ -7,5 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SynchronizeGame {
+public @interface Profile {
+
+    boolean showMethodArgsCount() default true;
 }

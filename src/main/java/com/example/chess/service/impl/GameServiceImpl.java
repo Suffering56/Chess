@@ -1,7 +1,5 @@
 package com.example.chess.service.impl;
 
-import com.example.chess.aspects.ProfileExecutionTime;
-import com.example.chess.aspects.SynchronizeGame;
 import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.input.MoveDTO;
 import com.example.chess.dto.output.CellDTO;
@@ -47,8 +45,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    @SynchronizeGame
-    @ProfileExecutionTime
     public Game createNewGame() {
         game = gameRepository.save(new Game());
         piecesMatrix = createStartArrangement();
@@ -56,7 +52,9 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell) {
+    public List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell) throws GameNotMatchedException {
+        checkGame(gameId);
+
         return new ArrayList<PointDTO>() {{
             add(new PointDTO(3, 3));
             add(new PointDTO(4, 3));
@@ -68,6 +66,7 @@ public class GameServiceImpl implements GameService {
     @Transactional
     public ParamsDTO applyMove(long gameId, MoveDTO dto) throws GameNotMatchedException {
         checkGame(gameId);
+
         int newPosition = game.getPosition() + 1;
 
         movePiece(dto.getFrom().getRowIndex(), dto.getFrom().getColumnIndex(),

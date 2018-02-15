@@ -1,6 +1,6 @@
 package com.example.chess.aspects.advice;
 
-import com.example.chess.aspects.ProfileExecutionTime;
+import com.example.chess.aspects.Profile;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,9 +13,9 @@ import java.lang.reflect.Method;
 @Log4j2
 @Aspect
 @Component
-public class ProfileExecutionTimeAdvice {
+public class ProfileAdvice {
 
-    @Around("@annotation(com.example.chess.aspects.ProfileExecutionTime)")
+    @Around("@annotation(com.example.chess.aspects.Profile)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
 
@@ -25,10 +25,10 @@ public class ProfileExecutionTimeAdvice {
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        ProfileExecutionTime profileExecutionTime = method.getAnnotation(ProfileExecutionTime.class);
+        Profile profile = method.getAnnotation(Profile.class);
 
         String signatureText = signature.getDeclaringType().getSimpleName() + "." + signature.getName();
-        if (profileExecutionTime.showMethodArgsCount()) {
+        if (profile.showMethodArgsCount()) {
             signatureText = signatureText + "[" + +signature.getMethod().getParameterCount() + "]";
         }
         log.info("<" + signatureText + "> executed in " + executionTime + "ms");

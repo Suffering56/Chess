@@ -27,7 +27,7 @@ public class GameController {
     @GetMapping("/{gameId}/move")
     public List<PointDTO> getAvailableMoves(@PathVariable("gameId") long gameId,
                                             @RequestParam int rowIndex,
-                                            @RequestParam int columnIndex) {
+                                            @RequestParam int columnIndex) throws GameNotMatchedException {
 
         return gameService.getAvailableMoves(gameId, new PointDTO(rowIndex, columnIndex));
     }
