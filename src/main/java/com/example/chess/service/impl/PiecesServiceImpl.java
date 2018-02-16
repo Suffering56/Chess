@@ -4,7 +4,6 @@ import com.example.chess.dto.PointDTO;
 import com.example.chess.dto.output.CellDTO;
 import com.example.chess.enums.Side;
 import com.example.chess.service.PieceService;
-import com.example.chess.util.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,32 +13,38 @@ import java.util.List;
 public class PiecesServiceImpl implements PieceService {
 
     private List<List<CellDTO>> piecesMatrix;
+    private CellDTO selectedCell;
+    private int selectedRow;
+    private int selectedColumn;
     private Side alliedSide;
     private Side enemySide;
 
     @Override
     public List<PointDTO> getAvailableMoves(CellDTO selectedCell) {
+        this.selectedCell = selectedCell;
+        selectedRow = selectedCell.getRowIndex();
+        selectedColumn = selectedCell.getColumnIndex();
         alliedSide = selectedCell.getSide();
         enemySide = getEnemySide(selectedCell);
 
         switch (selectedCell.getPiece()) {
             case pawn: {
-                return getMovesForPawn(selectedCell);
+                return getMovesForPawn();
             }
             case knight: {
-                return getMovesForKnight(selectedCell);
+                return getMovesForKnight();
             }
             case bishop: {
-                return getMovesForBishop(selectedCell);
+                return getMovesForBishop();
             }
             case rook: {
-                return getMovesForRook(selectedCell);
+                return getMovesForRook();
             }
             case queen: {
-                return getMovesForQueen(selectedCell);
+                return getMovesForQueen();
             }
             case king: {
-                return getMovesForKing(selectedCell);
+                return getMovesForKing();
             }
         }
 
@@ -47,7 +52,7 @@ public class PiecesServiceImpl implements PieceService {
     }
 
     @SuppressWarnings("PointlessArithmeticExpression")
-    private List<PointDTO> getMovesForPawn(CellDTO selectedCell) {
+    private List<PointDTO> getMovesForPawn() {
         List<PointDTO> result = new ArrayList<>();
 
         int vector = 1;
@@ -87,80 +92,86 @@ public class PiecesServiceImpl implements PieceService {
         return result;
     }
 
-    private List<PointDTO> getMovesForKnight(CellDTO selectedCell) {
+    private List<PointDTO> getMovesForKnight() {
         List<PointDTO> result = new ArrayList<>();
+
+        //TODO: реализовать ходы коня
 
         return result;
     }
 
-    private List<PointDTO> getMovesForBishop(CellDTO selectedCell) {
+    private List<PointDTO> getMovesForBishop() {
         List<PointDTO> result = new ArrayList<>();
 
+        addAvailableMovesByVector(result, 1, 1);
+        addAvailableMovesByVector(result, -1, 1);
+        addAvailableMovesByVector(result, 1, -1);
+        addAvailableMovesByVector(result, -1, -1);
 
         return result;
     }
 
-    private boolean addAvailableRookMove(List<PointDTO> movesList, CellDTO cell) {
-        if (cell.getSide() == alliedSide) {
+    private List<PointDTO> getMovesForRook() {
+        List<PointDTO> result = new ArrayList<>();
+
+        addAvailableMovesByVector(result, 1, 0);
+        addAvailableMovesByVector(result, -1, 0);
+        addAvailableMovesByVector(result, 0, 1);
+        addAvailableMovesByVector(result, 0, -1);
+
+        return result;
+    }
+
+    private List<PointDTO> getMovesForQueen() {
+        List<PointDTO> result = new ArrayList<>();
+
+        result.addAll(getMovesForRook());
+        result.addAll(getMovesForBishop());
+
+        return result;
+    }
+
+    private List<PointDTO> getMovesForKing() {
+        List<PointDTO> result = new ArrayList<>();
+
+        addAvailableMovesByVector(result, 1, 0, 1);
+        addAvailableMovesByVector(result, -1, 0, 1);
+        addAvailableMovesByVector(result, 0, 1, 1);
+        addAvailableMovesByVector(result, 0, -1, 1);
+        addAvailableMovesByVector(result, 1, 1, 1);
+        addAvailableMovesByVector(result, -1, 1, 1);
+        addAvailableMovesByVector(result, 1, -1, 1);
+        addAvailableMovesByVector(result, -1, -1, 1);
+
+        //TODO: реализовать рокировку
+
+        return result;
+    }
+
+    private void addAvailableMovesByVector(List<PointDTO> resultMovesList, int rowVector, int columnVector) {
+        addAvailableMovesByVector(resultMovesList, rowVector, columnVector, 7);
+    }
+
+    private void addAvailableMovesByVector(List<PointDTO> resultMovesList, int rowVector, int columnVector, int vectorLength) {
+        for (int i = 1; i < vectorLength + 1; i++) {
+            CellDTO cell = getSelectedCell(selectedRow + rowVector * i, selectedColumn + columnVector * i);
+            if (addSingleAvailableMoveForVector(resultMovesList, cell)) {
+                break;
+            }
+        }
+    }
+
+    private boolean addSingleAvailableMoveForVector(List<PointDTO> resultMovesList, CellDTO cell) {
+        if (cell == null || cell.getSide() == alliedSide) {
             return true;
         }
 
-        movesList.add(cell);
+        resultMovesList.add(cell);
 
         if (cell.getSide() == enemySide) {
             return true;
         }
         return false;
-    }
-
-    private List<PointDTO> getMovesForRook(CellDTO selectedCell) {
-        List<PointDTO> result = new ArrayList<>();
-
-        CellDTO cell;
-        int selectedRow = selectedCell.getRowIndex();
-        int selectedColumn = selectedCell.getColumnIndex();
-
-        //vertical
-        for (int rowIndex = selectedRow - 1; rowIndex >= 0; rowIndex--) {
-            cell = getSelectedCell(rowIndex, selectedColumn);
-            if (addAvailableRookMove(result, cell)) {
-                break;
-            }
-        }
-        for (int rowIndex = selectedRow + 1; rowIndex < 8; rowIndex++) {
-            cell = getSelectedCell(rowIndex, selectedColumn);
-            if (addAvailableRookMove(result, cell)) {
-                break;
-            }
-        }
-
-        //horizontal
-        for (int columnIndex = selectedColumn - 1; columnIndex >= 0; columnIndex--) {
-            cell = getSelectedCell(selectedRow, columnIndex);
-            if (addAvailableRookMove(result, cell)) {
-                break;
-            }
-        }
-        for (int columnIndex = selectedColumn + 1; columnIndex < 8; columnIndex++) {
-            cell = getSelectedCell(selectedRow, columnIndex);
-            if (addAvailableRookMove(result, cell)) {
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    private List<PointDTO> getMovesForQueen(CellDTO selectedCell) {
-        List<PointDTO> result = new ArrayList<>();
-        //getMovesForRook + getMovesForBishop + distinct
-        return result;
-    }
-
-    private List<PointDTO> getMovesForKing(CellDTO selectedCell) {
-        List<PointDTO> result = new ArrayList<>();
-
-        return result;
     }
 
     private CellDTO getSelectedCell(int rowIndex, int columnIndex) {
@@ -176,18 +187,6 @@ public class PiecesServiceImpl implements PieceService {
             enemySide = Side.white;
         }
         return enemySide;
-    }
-
-    private List<PointDTO> getRandomMoves() {
-        return new ArrayList<PointDTO>() {{
-            add(new PointDTO(3, 3));
-            add(new PointDTO(4, 3));
-            add(new PointDTO(rnd(), rnd()));
-        }};
-    }
-
-    private static int rnd() {
-        return Utils.generateRandomInt(4, 7);
     }
 
     @Override
