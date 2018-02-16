@@ -61,7 +61,7 @@ app.controller("common", function ($scope, $http, $window, initService) {
         }).then(function (response) {
             handleApplyMove(response.data);
         }, function (reason) {
-            // $window.location.href = url;
+            alert("You have already opened game, please refresh current page if you want continue game!");
         });
     }
 
