@@ -12,7 +12,7 @@ import com.example.chess.exceptions.GameNotMatchedException;
 import com.example.chess.repository.GameRepository;
 import com.example.chess.repository.HistoryRepository;
 import com.example.chess.service.GameService;
-import com.example.chess.util.Utils;
+import com.example.chess.service.PieceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,34 +32,32 @@ public class GameServiceImpl implements GameService {
     private GameRepository gameRepository;
     @Autowired
     private HistoryRepository historyRepository;
+    @Autowired
+    private PieceService pieceService;
 
-    private List<List<CellDTO>> piecesMatrix;
     private Game game;
+    private List<List<CellDTO>> piecesMatrix;
     private int currentMatrixPosition = 0;
 
     @Override
     public Game findGameById(long gameId) {
         game = gameRepository.findOne(gameId);
-        piecesMatrix = createStartArrangement();
+        setPiecesMatrix(createStartArrangement());
         return game;
     }
 
     @Override
     public Game createNewGame() {
         game = gameRepository.save(new Game());
-        piecesMatrix = createStartArrangement();
+        setPiecesMatrix(createStartArrangement());
         return game;
     }
 
     @Override
-    public List<PointDTO> getAvailableMoves(long gameId, PointDTO selectedCell) throws GameNotMatchedException {
+    public List<PointDTO> getAvailableMoves(long gameId, PointDTO point) throws GameNotMatchedException {
         checkGame(gameId);
-
-        return new ArrayList<PointDTO>() {{
-            add(new PointDTO(3, 3));
-            add(new PointDTO(4, 3));
-            add(new PointDTO(rnd(), rnd()));
-        }};
+        CellDTO selectedCell = getSelectedCell(point);
+        return pieceService.getAvailableMoves(selectedCell);
     }
 
     @Override
@@ -97,17 +95,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public ParamsDTO getArrangementByPosition(long gameId, int position) {
         if (position != currentMatrixPosition) {
-            piecesMatrix = createPiecesMatrixByPosition(gameId, position);
+            setPiecesMatrix(createPiecesMatrixByPosition(gameId, position));
             currentMatrixPosition = position;
         }
 
         return createParamsDTO();
-    }
-
-    private void checkGame(long gameId) throws GameNotMatchedException {
-        if (gameId != game.getId()) {
-            throw new GameNotMatchedException();
-        }
     }
 
     private void movePiece(int rowFrom, int columnFrom, int rowTo, int columnTo) {
@@ -135,6 +127,23 @@ public class GameServiceImpl implements GameService {
         return result;
     }
 
+    private CellDTO getSelectedCell(PointDTO point) {
+        return getSelectedCell(point.getRowIndex(), point.getColumnIndex());
+    }
+
+    private CellDTO getSelectedCell(int rowIndex, int columnIndex) {
+        if (rowIndex < 0 || rowIndex > 7 || columnIndex < 0 || columnIndex > 7) {
+            return null;
+        }
+        return piecesMatrix.get(rowIndex).get(columnIndex);
+    }
+
+    private void checkGame(long gameId) throws GameNotMatchedException {
+        if (gameId != game.getId()) {
+            throw new GameNotMatchedException();
+        }
+    }
+
     private ParamsDTO createParamsDTO() {
         ParamsDTO result = new ParamsDTO();
         result.setGame(game);
@@ -149,10 +158,6 @@ public class GameServiceImpl implements GameService {
                 cell.setSelected(false);
             }
         }
-    }
-
-    private static int rnd() {
-        return Utils.generateRandomInt(4, 7);
     }
 
     private List<List<CellDTO>> createStartArrangement() {
@@ -195,5 +200,10 @@ public class GameServiceImpl implements GameService {
         }
 
         return result;
+    }
+
+    private void setPiecesMatrix(List<List<CellDTO>> piecesMatrix) {
+        this.piecesMatrix = piecesMatrix;
+        pieceService.setPiecesMatrix(piecesMatrix);
     }
 }

@@ -74,10 +74,12 @@ app.controller("common", function ($scope, $http, $window, initService) {
     function selectCell(cell) {
         var expectedSide = (game.position % 2 == 0) ? "white" : "black";
 
+        clearAvailablePoints();
+        if (selectedCell) {
+            selectedCell.selected = false;
+        }
+
         if (cell.side && cell.side == expectedSide) {
-            if (selectedCell) {
-                selectedCell.selected = false;
-            }
             cell.selected = true;
             selectedCell = cell;
 
@@ -99,16 +101,19 @@ app.controller("common", function ($scope, $http, $window, initService) {
     }
 
     var handleAvailableMoves = function (points) {
-        if (availablePoints) {
-            availablePoints.map(function (point) {
-                getCellByPoint(point).available = false;
-            });
-        }
         points.map(function (point) {
             getCellByPoint(point).available = true;
         });
         availablePoints = points;
     };
+
+    function clearAvailablePoints() {
+        if (availablePoints) {
+            availablePoints.map(function (point) {
+                getCellByPoint(point).available = false;
+            });
+        }
+    }
 
     $scope.getCellClass = function (cell) {
         if ((cell.rowIndex + cell.columnIndex) % 2 == 0) {
