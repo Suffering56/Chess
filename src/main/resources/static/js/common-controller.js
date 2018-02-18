@@ -11,7 +11,9 @@ app.controller("common", function ($scope, $http, $window, initService) {
         player: {
             isWhite: null,
             isViewer: false
-        }
+        },
+        checkWhiteKing: false,
+        checkBlackKing: false
     };
 
     var params = $scope.params;
@@ -72,14 +74,13 @@ app.controller("common", function ($scope, $http, $window, initService) {
     }
 
     function selectCell(cell) {
-        var expectedSide = (game.position % 2 == 0) ? "white" : "black";
 
         clearAvailablePoints();
         if (selectedCell) {
             selectedCell.selected = false;
         }
 
-        if (cell.side && cell.side == expectedSide) {
+        if (cell.side && cell.side == getExpectedSide()) {
             cell.selected = true;
             selectedCell = cell;
 
@@ -127,14 +128,22 @@ app.controller("common", function ($scope, $http, $window, initService) {
         var result = [];
 
         if (cell.piece) {
-            result.push('piece');
+            result.push("piece");
             result.push(cell.piece + "-" + cell.side);
+            if (cell.piece == "king") {
+                if ((params.checkWhiteKing == true && cell.side == "white") || (params.checkBlackKing == true && cell.side == "black")) {
+                    result.push("check");
+                }
+            }
         }
 
         if (cell.selected == true) {
             result.push('selected');
         } else if (cell.available == true) {
             result.push('available');
+            if (cell.side == getEnemySide()){
+                result.push('capture');
+            }
         }
 
         return result;
@@ -146,6 +155,14 @@ app.controller("common", function ($scope, $http, $window, initService) {
 
     function getCellByPoint(point) {
         return getCell(point.rowIndex, point.columnIndex);
+    }
+
+    function getExpectedSide() {
+        return (game.position % 2 == 0) ? "white" : "black";
+    }
+
+    function getEnemySide() {
+        return (game.position % 2 == 0) ? "black" : "white";
     }
 
 });
