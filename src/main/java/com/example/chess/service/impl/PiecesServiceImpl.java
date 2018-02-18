@@ -61,28 +61,28 @@ public class PiecesServiceImpl implements PieceService {
         }
 
         boolean isFirstMove = false;
-        if (selectedCell.getRowIndex() == 1 || selectedCell.getRowIndex() == 6) {
+        if (selectedRow == 1 || selectedRow == 6) {
             isFirstMove = true;
         }
 
-        CellDTO cell = getSelectedCell(selectedCell.getRowIndex() + 1 * vector, selectedCell.getColumnIndex());
+        CellDTO cell = getSelectedCell(selectedRow + 1 * vector, selectedColumn);
         if (cell.getPiece() == null) {
             result.add(cell);
         }
 
         if (isFirstMove) {
-            cell = getSelectedCell(selectedCell.getRowIndex() + 2 * vector, selectedCell.getColumnIndex());
+            cell = getSelectedCell(selectedRow + 2 * vector, selectedColumn);
             if (cell.getPiece() == null) {
                 result.add(cell);
             }
         }
 
         //attack
-        cell = getSelectedCell(selectedCell.getRowIndex() + vector, selectedCell.getColumnIndex() + 1);
+        cell = getSelectedCell(selectedRow + vector, selectedColumn + 1);
         if (cell != null && cell.getPiece() != null && cell.getSide() == enemySide) {
             result.add(cell);
         }
-        cell = getSelectedCell(selectedCell.getRowIndex() + vector, selectedCell.getColumnIndex() - 1);
+        cell = getSelectedCell(selectedRow + vector, selectedColumn - 1);
         if (cell != null && cell.getPiece() != null && cell.getSide() == enemySide) {
             result.add(cell);
         }
@@ -95,18 +95,32 @@ public class PiecesServiceImpl implements PieceService {
     private List<PointDTO> getMovesForKnight() {
         List<PointDTO> result = new ArrayList<>();
 
-        //TODO: реализовать ходы коня
+        checkAndAddKnightMove(result, 1, 2);
+        checkAndAddKnightMove(result, 2, 1);
+        checkAndAddKnightMove(result, 1, -2);
+        checkAndAddKnightMove(result, 2, -1);
+        checkAndAddKnightMove(result, -1, 2);
+        checkAndAddKnightMove(result, -2, 1);
+        checkAndAddKnightMove(result, -1, -2);
+        checkAndAddKnightMove(result, -2, -1);
 
         return result;
+    }
+
+    private void checkAndAddKnightMove(List<PointDTO> resultMovesList, int rowOffset, int columnOffset) {
+        CellDTO cell = getSelectedCell(selectedRow + rowOffset, selectedColumn + columnOffset);
+        if (cell != null && cell.getSide() != alliedSide) {
+            resultMovesList.add(cell);
+        }
     }
 
     private List<PointDTO> getMovesForBishop() {
         List<PointDTO> result = new ArrayList<>();
 
-        addAvailableMovesByVector(result, 1, 1);
-        addAvailableMovesByVector(result, -1, 1);
-        addAvailableMovesByVector(result, 1, -1);
-        addAvailableMovesByVector(result, -1, -1);
+        addAvailableMovesForRay(result, 1, 1);
+        addAvailableMovesForRay(result, -1, 1);
+        addAvailableMovesForRay(result, 1, -1);
+        addAvailableMovesForRay(result, -1, -1);
 
         return result;
     }
@@ -114,10 +128,10 @@ public class PiecesServiceImpl implements PieceService {
     private List<PointDTO> getMovesForRook() {
         List<PointDTO> result = new ArrayList<>();
 
-        addAvailableMovesByVector(result, 1, 0);
-        addAvailableMovesByVector(result, -1, 0);
-        addAvailableMovesByVector(result, 0, 1);
-        addAvailableMovesByVector(result, 0, -1);
+        addAvailableMovesForRay(result, 1, 0);
+        addAvailableMovesForRay(result, -1, 0);
+        addAvailableMovesForRay(result, 0, 1);
+        addAvailableMovesForRay(result, 0, -1);
 
         return result;
     }
@@ -134,34 +148,34 @@ public class PiecesServiceImpl implements PieceService {
     private List<PointDTO> getMovesForKing() {
         List<PointDTO> result = new ArrayList<>();
 
-        addAvailableMovesByVector(result, 1, 0, 1);
-        addAvailableMovesByVector(result, -1, 0, 1);
-        addAvailableMovesByVector(result, 0, 1, 1);
-        addAvailableMovesByVector(result, 0, -1, 1);
-        addAvailableMovesByVector(result, 1, 1, 1);
-        addAvailableMovesByVector(result, -1, 1, 1);
-        addAvailableMovesByVector(result, 1, -1, 1);
-        addAvailableMovesByVector(result, -1, -1, 1);
+        addAvailableMovesForRay(result, 1, 0, 1);
+        addAvailableMovesForRay(result, -1, 0, 1);
+        addAvailableMovesForRay(result, 0, 1, 1);
+        addAvailableMovesForRay(result, 0, -1, 1);
+        addAvailableMovesForRay(result, 1, 1, 1);
+        addAvailableMovesForRay(result, -1, 1, 1);
+        addAvailableMovesForRay(result, 1, -1, 1);
+        addAvailableMovesForRay(result, -1, -1, 1);
 
         //TODO: реализовать рокировку
 
         return result;
     }
 
-    private void addAvailableMovesByVector(List<PointDTO> resultMovesList, int rowVector, int columnVector) {
-        addAvailableMovesByVector(resultMovesList, rowVector, columnVector, 7);
+    private void addAvailableMovesForRay(List<PointDTO> resultMovesList, int rowVector, int columnVector) {
+        addAvailableMovesForRay(resultMovesList, rowVector, columnVector, 7);
     }
 
-    private void addAvailableMovesByVector(List<PointDTO> resultMovesList, int rowVector, int columnVector, int vectorLength) {
-        for (int i = 1; i < vectorLength + 1; i++) {
+    private void addAvailableMovesForRay(List<PointDTO> resultMovesList, int rowVector, int columnVector, int rayLength) {
+        for (int i = 1; i < rayLength + 1; i++) {
             CellDTO cell = getSelectedCell(selectedRow + rowVector * i, selectedColumn + columnVector * i);
-            if (addSingleAvailableMoveForVector(resultMovesList, cell)) {
+            if (checkAndAddMove(resultMovesList, cell)) {
                 break;
             }
         }
     }
 
-    private boolean addSingleAvailableMoveForVector(List<PointDTO> resultMovesList, CellDTO cell) {
+    private boolean checkAndAddMove(List<PointDTO> resultMovesList, CellDTO cell) {
         if (cell == null || cell.getSide() == alliedSide) {
             return true;
         }
